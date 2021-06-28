@@ -1,9 +1,9 @@
-package com.blz.EmployeePayrollAppService;
+package com.blz.EmployeePayrollApp.Service;
 
 import java.util.List;
 
-import com.blz.EmployeePayrollAppDTO.EPADTO;
-import com.blz.EmployeePayrollAppModel.EPAData;
+import com.blz.EmployeePayrollApp.DTO.EPADTO;
+import com.blz.EmployeePayrollApp.Model.EPAData;
 
 public interface IEPAService {
 
@@ -13,7 +13,7 @@ public interface IEPAService {
 
 	EPAData createEPAData(EPADTO EPADTO);
 
-	EPAData updateEPAData(EPADTO EPADTO);
+	EPAData updateEPAData(int empId, EPADTO employeePayrollDTO);
 
 	void deleteEPAData(int empId);
 }

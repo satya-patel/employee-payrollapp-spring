@@ -1,4 +1,4 @@
-package com.blz.EmployeePayrollAppController;
+package com.blz.EmployeePayrollApp.Controller;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blz.EmployeePayrollAppDTO.EPADTO;
-import com.blz.EmployeePayrollAppDTO.ResponseDTO;
-import com.blz.EmployeePayrollAppModel.EPAData;
-import com.blz.EmployeePayrollAppService.IEPAService;
+import com.blz.EmployeePayrollApp.DTO.EPADTO;
+import com.blz.EmployeePayrollApp.DTO.ResponseDTO;
+import com.blz.EmployeePayrollApp.Model.EPAData;
+import com.blz.EmployeePayrollApp.Service.IEPAService;
 
 @RestController
 @RequestMapping("/employeepayrollservice")
@@ -50,10 +50,11 @@ public class EPAController {
 		return new ResponseEntity<ResponseDTO>(resDTO, HttpStatus.OK);
 	}
 
-	@PutMapping("/update")
-	public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@RequestBody EPADTO employeePayrollDTO) {
+	@PutMapping("/update/{empId}")
+	public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@PathVariable("empId") int empId,
+			@RequestBody EPADTO employeePayrollDTO) {
 		EPAData empData = null;
-		empData = employeePayrollService.updateEPAData(employeePayrollDTO);
+		empData = employeePayrollService.updateEPAData(empId, employeePayrollDTO);
 		ResponseDTO resDTO = new ResponseDTO("Updated Employee Payroll Data Successfully: ", empData);
 		return new ResponseEntity<ResponseDTO>(resDTO, HttpStatus.OK);
 	}
