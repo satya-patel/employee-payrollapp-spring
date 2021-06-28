@@ -1,50 +1,58 @@
 package com.blz.EmployeePayrollApp.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.blz.EmployeePayrollApp.DTO.EPADTO;
+import com.blz.EmployeePayrollApp.Exception.EmployeePayrollException;
 import com.blz.EmployeePayrollApp.Model.EPAData;
+import com.blz.EmployeePayrollApp.Repository.EPARepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class EPAService implements IEPAService {
 
-	private List<EPAData> employeePayrollList = new ArrayList<>();
+	@Autowired
+	private EPARepository employeeRepository;
 
 	@Override
 	public List<EPAData> getEPAData() {
-		List<EPAData> empData = new ArrayList<>();
-		return employeePayrollList;
+		return employeeRepository.findAll();
 	}
 
 	@Override
 	public EPAData getEPADataById(int empId) {
-		EPAData empData = null;
-		return employeePayrollList.get(empId - 1);
+		return employeeRepository.findById(empId).orElseThrow(
+				() -> new EmployeePayrollException("Employee with employee id: " + empId + " does not exists."));
 	}
 
 	@Override
-	public EPAData createEPAData(EPADTO EPADTO) {
+	public List<EPAData> getEmployeesByDepartment(String department) {
+		return employeeRepository.findEmployeesById(department);
+	}
+
+	@Override
+	public EPAData createEPAData(EPADTO ePADTO) {
 		EPAData empData = null;
-		empData = new EPAData(employeePayrollList.size() + 1, EPADTO);
-		employeePayrollList.add(empData);
-		return empData;
+		empData = new EPAData(ePADTO);
+		log.debug("Employee Data: " + empData.toString());
+		return employeeRepository.save(empData);
 	}
 
 	@Override
 	public EPAData updateEPAData(int empId, EPADTO employeePayrollDTO) {
 		EPAData empData = this.getEPADataById(empId);
-		empData.setName(employeePayrollDTO.name);
-		empData.setSalary(employeePayrollDTO.salary);
-		employeePayrollList.set(empId - 1, empData);
-		return empData;
+		empData.updateEmployeePayrollData(employeePayrollDTO);
+		return employeeRepository.save(empData);
 	}
 
 	@Override
 	public void deleteEPAData(int empId) {
-		// TODO Auto-generated method stub
-		employeePayrollList.remove(empId - 1);
+		EPAData employeeDataById = this.getEPADataById(empId);
+		employeeRepository.delete(employeeDataById);
 	}
 }

@@ -2,6 +2,8 @@ package com.blz.EmployeePayrollApp.Controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,11 @@ import com.blz.EmployeePayrollApp.DTO.ResponseDTO;
 import com.blz.EmployeePayrollApp.Model.EPAData;
 import com.blz.EmployeePayrollApp.Service.IEPAService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/employeepayrollservice")
+@Slf4j
 public class EPAController {
 
 	@Autowired
@@ -42,8 +47,16 @@ public class EPAController {
 		return new ResponseEntity<ResponseDTO>(resDTO, HttpStatus.OK);
 	}
 
+	@GetMapping("/department/{department}")
+	public ResponseEntity<ResponseDTO> getEmployeesByDepartment(@PathVariable("department") String department) {
+		List<EPAData> employeesByDepartment = employeePayrollService.getEmployeesByDepartment(department);
+		ResponseDTO responseDTO = new ResponseDTO("Get call for the department successful: ", employeesByDepartment);
+		return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+	}
+
 	@PostMapping("/create")
-	public ResponseEntity<ResponseDTO> createEmployeePayrollData(@RequestBody EPADTO employeePayrollDTO) {
+	public ResponseEntity<ResponseDTO> createEmployeePayrollData(@Valid @RequestBody EPADTO employeePayrollDTO) {
+		log.debug("Employee DTO: " + employeePayrollDTO.toString());
 		EPAData empData = null;
 		empData = employeePayrollService.createEPAData(employeePayrollDTO);
 		ResponseDTO resDTO = new ResponseDTO("Created Employee Payroll Data Successfully:", empData);
@@ -52,7 +65,7 @@ public class EPAController {
 
 	@PutMapping("/update/{empId}")
 	public ResponseEntity<ResponseDTO> updateEmployeePayrollData(@PathVariable("empId") int empId,
-			@RequestBody EPADTO employeePayrollDTO) {
+			@Valid @RequestBody EPADTO employeePayrollDTO) {
 		EPAData empData = null;
 		empData = employeePayrollService.updateEPAData(empId, employeePayrollDTO);
 		ResponseDTO resDTO = new ResponseDTO("Updated Employee Payroll Data Successfully: ", empData);
